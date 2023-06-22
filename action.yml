@@ -1,0 +1,45 @@
+name: "RobustAI Unit Test Generator"
+description: "Automatically generates unit tests for functions in the codebase"
+inputs:
+   robustai-api-key:
+     required: true
+     description: "Robust AI API Key"
+   repo-path:
+     required: true
+     description: "Path to the checked out repo to generate tests for"
+runs:
+  using: "composite"
+  steps:
+    - name: Download gen_tests install script
+      shell: bash
+      run: |
+        AUTH_HEADER="Authorization: Token ${{ inputs.robustai-api-key }}"
+        JSON_HEADER="Accept: application/json"
+        ROBUSTAI_URL="https://robust-ai.uc.r.appspot.com/get_install_url?is_linux=true"
+        GEN_TESTS_INSTALL_URL=$(curl -H "$AUTH_HEADER" -H "$JSON_HEADER" "$ROBUSTAI_URL" | jq .install_url)
+        echo "GEN_TESTS_INSTALL_URL=$GEN_TESTS_INSTALL_URL" >> $GITHUB_ENV
+    - name: Run gen_tests install script
+      shell: bash
+      run: |
+        curl ${{ env.GEN_TESTS_INSTALL_URL }} -o install_script.sh
+        chmod +x ./install_script.sh
+        ./install_script.sh
+        rm ./install_script.sh
+    - name: Setup
+      shell: bash
+      run: |
+        pip3 install --upgrade pip
+        pip3 install --upgrade setuptools
+        pip3 install ~/bin/robust_ai_utils.tar.gz
+        echo "ROBUSTAI_API_KEY=${{ inputs.robustai-api-key }}" >> $GITHUB_ENV
+    - name: Fetch main branch
+      shell: bash
+      run: git fetch origin main
+    - name: Run gen_tests
+      run: "gen_tests --repo_path=${{ inputs.repo-path }} --mode=4 --run_debugging=False"
+      shell: bash
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      name: Commit tests
+      with:
+          commit_user_name: "RobustAI"
+          commit_message: "Generated unit tests"
