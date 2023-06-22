@@ -43,3 +43,7 @@ runs:
       with:
           commit_user_name: "RobustAI"
           commit_message: "Generated unit tests"
+
+branding:
+  icon: 'cpu'
+  color: green
