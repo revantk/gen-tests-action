@@ -5,7 +5,8 @@ inputs:
      required: true
      description: "Robust AI API Key"
    repo-path:
-     required: true
+     required: false
+     default: './'
      description: "Path to the checked out repo to generate tests for"
 runs:
   using: "composite"
