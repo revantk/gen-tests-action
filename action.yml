@@ -1,4 +1,4 @@
-name: "RobustAI Unit Test Generator"
+name: "Unit Test Generator"
 description: "Automatically generates unit tests for functions in the codebase"
 inputs:
    robustai-api-key:
