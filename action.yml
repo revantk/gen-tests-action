@@ -12,7 +12,7 @@ runs:
   steps:
     - name: Install jq
       shell: bash
-      run: apt-get update && apt-get install jq
+      run: apt-get update && apt-get install -y jq
     - name: Download gen_tests install script
       shell: bash
       run: |
