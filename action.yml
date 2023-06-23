@@ -29,7 +29,7 @@ runs:
       shell: bash
       run: |
         cd ${{ github.action_path }}
-        npm instsall 
+        npm install 
         node index.js
       if: steps.check.outputs.triggered == 'true'
     - name: Run gen_tests install script
