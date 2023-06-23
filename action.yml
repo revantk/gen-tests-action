@@ -28,6 +28,9 @@ runs:
     - name: Checkout branch
       shell: bash
       run: hub pr checkout ${{ github.event.issue.number }}
+      env:
+        GITHUB_USER: revantk
+        GITHUB_TOKEN: ${{ inputs.github-token }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
