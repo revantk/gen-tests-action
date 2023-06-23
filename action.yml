@@ -11,9 +11,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Check PR comment for trigger
+      uses: khan/pull-request-comment-trigger@v1.1.0
+      with:
+        trigger: "/gen_tests"     
     - name: Install jq
       shell: bash
       run: apt-get update && apt-get install -y jq
+      if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
       run: |
@@ -22,6 +27,7 @@ runs:
         ROBUSTAI_URL="https://robust-ai.uc.r.appspot.com/get_install_url?is_linux=true"
         GEN_TESTS_INSTALL_URL=$(curl -H "$AUTH_HEADER" -H "$JSON_HEADER" "$ROBUSTAI_URL" | jq .install_url)
         echo "GEN_TESTS_INSTALL_URL=$GEN_TESTS_INSTALL_URL" >> $GITHUB_ENV
+      if: steps.check.outputs.triggered == 'true'
     - name: Run gen_tests install script
       shell: bash
       run: |
@@ -29,6 +35,7 @@ runs:
         chmod +x ./install_script.sh
         ./install_script.sh
         rm ./install_script.sh
+      if: steps.check.outputs.triggered == 'true'
     - name: Setup
       shell: bash
       run: |
@@ -36,17 +43,21 @@ runs:
         pip3 install --upgrade setuptools
         pip3 install ~/bin/robust_ai_utils.tar.gz
         echo "ROBUSTAI_API_KEY=${{ inputs.robustai-api-key }}" >> $GITHUB_ENV
+      if: steps.check.outputs.triggered == 'true'
     - name: Fetch main branch
       shell: bash
       run: git fetch origin main
+      if: steps.check.outputs.triggered == 'true'
     - name: Run gen_tests
       run: "gen_tests --repo_path=${{ inputs.repo-path }} --mode=4 --run_debugging=False"
       shell: bash
+      if: steps.check.outputs.triggered == 'true'
     - uses: stefanzweifel/git-auto-commit-action@v4
       name: Commit tests
       with:
           commit_user_name: "RobustAI"
           commit_message: "Generated unit tests"
+      if: steps.check.outputs.triggered == 'true'
 
 branding:
   icon: 'cpu'
