@@ -31,6 +31,8 @@ runs:
         cd ${{ github.action_path }}
         npm install 
         node index.js
+      env:
+        ROBUSTAI_API_KEY: ${{ inputs.robustai-api-key }}
       if: steps.check.outputs.triggered == 'true'
     - name: Run gen_tests install script
       shell: bash
