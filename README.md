@@ -49,8 +49,8 @@ jobs:
       image: <docker-image>
       options: --user root  # workaround for Github actions Node.js installation
       credentials:
-        username: ${{ secrets.DOCKERHUB_USER }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+        password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
     steps:
       ...
 ```
