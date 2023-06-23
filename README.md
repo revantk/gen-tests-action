@@ -31,9 +31,6 @@ jobs:
     name: Generate Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Create .env file
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Unit Test Generator
         uses: revantk/gen-tests-action@0.1
         with:
