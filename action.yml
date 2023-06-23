@@ -27,7 +27,7 @@ runs:
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
-      run: node index.js
+      run: node ${{ github.action_path }}/index.js
       if: steps.check.outputs.triggered == 'true'
     - name: Run gen_tests install script
       shell: bash
