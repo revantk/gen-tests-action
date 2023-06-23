@@ -39,6 +39,11 @@ jobs:
 ```
 Add a Github Actions secret named `ROBUSTAI_API_KEY` to your repository settings with your API key. Note that `secrets.GITHUB_TOKEN` is automatically supplied by Github Actions and doesn't require manual setup.
 
+- Make sure Github Actions has read and write permissions on your repository. This allows the action to add comments to pull requests and commit generated tests to your branch.
+```
+Settings -> Action -> General -> Workflow permissions > Read and Write permissions
+```
+
 - If you are using Docker images as part of your CI/CD workflow, you can run test generation in a Docker image with the requisite dependencies for your project. Add a `container` section under the job in your worflow YAML file.
 ```
 jobs:
