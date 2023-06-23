@@ -13,6 +13,7 @@ runs:
   steps:
     - name: Check PR comment for trigger
       uses: khan/pull-request-comment-trigger@v1.1.0
+      id: check
       with:
         trigger: "/gen_tests"     
     - name: Install jq
