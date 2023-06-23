@@ -35,8 +35,9 @@ jobs:
         uses: revantk/gen-tests-action@0.1
         with:
           robustai-api-key: ${{ secrets.ROBUSTAI_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
-- Add a Github Actions secret named `ROBUSTAI_API_KEY` to your repository settings with your API key
+Add a Github Actions secret named `ROBUSTAI_API_KEY` to your repository settings with your API key. Note that `secrets.GITHUB_TOKEN` is automatically supplied by Github Actions and doesn't require manual setup.
 
 - If you are using Docker images as part of your CI/CD workflow, you can run test generation in a Docker image with the requisite dependencies for your project. Add a `container` section under the job in your worflow YAML file.
 ```
