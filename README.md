@@ -36,6 +36,7 @@ jobs:
         with:
           robustai-api-key: ${{ secrets.ROBUSTAI_API_KEY }}
 ```
+Add a Github Actions secret named `ROBUSTAI_API_KEY` to your repository settings with your API key
 
 - If you are using Docker images as part of your CI/CD workflow, you can run test generation in a Docker image with the requisite dependencies for your project. Add a `container` section under the job in your worflow YAML file.
 ```
