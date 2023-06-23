@@ -25,6 +25,10 @@ runs:
     - name: Checkout repo
       uses: actions/checkout@v3
       if: steps.check.outputs.triggered == 'true'
+    - name: Checkout branch
+      shell: bash
+      run: hub pr checkout ${{ github.event.issue.number }}
+      if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
       run: |
