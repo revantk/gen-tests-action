@@ -40,7 +40,7 @@ jobs:
           robustai-api-key: ${{ secrets.ROBUSTAI_API_KEY }}
 ```
 
-- If you are using Docker images as part of your CI/CD workflow, you can run test generation in a Docker image with the requisite dependencies for your project. To do this, add a `container` section under `jobs` in your worflow YAML file.
+- If you are using Docker images as part of your CI/CD workflow, you can run test generation in a Docker image with the requisite dependencies for your project. Add a `container` section under `jobs` in your worflow YAML file.
 ```
 jobs:
   gen-tests:
