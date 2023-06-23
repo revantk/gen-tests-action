@@ -37,7 +37,6 @@ runs:
     - name: Run gen_tests install script
       shell: bash
       run: |
-        curl ${{ env.GEN_TESTS_INSTALL_URL }} -o install_script.sh
         chmod +x ./install_script.sh
         ./install_script.sh
         rm ./install_script.sh
