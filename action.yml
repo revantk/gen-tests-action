@@ -61,8 +61,11 @@ runs:
       run: git fetch origin main
       if: steps.check.outputs.triggered == 'true'
     - name: Run gen_tests
-      run: "gen_tests --repo_path=${{ inputs.repo-path }} --mode=4 --run_debugging=False"
-      shell: bash
+      id: run_gen_tests
+      uses: 'selfagency/capture-output@v1'
+      with:
+        cmd: gen_tests
+        args: --repo_path=${{ inputs.repo-path }},--mode=4,--run_debugging=False
       if: steps.check.outputs.triggered == 'true'
     - uses: stefanzweifel/git-auto-commit-action@v4
       name: Commit tests
@@ -70,7 +73,17 @@ runs:
           commit_user_name: "RobustAI"
           commit_message: "Generated unit tests"
       if: steps.check.outputs.triggered == 'true'
-
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: ${{ steps.run_gen_tests.outputs.output }}
+          })
+      if: steps.check.outputs.triggered == 'true'
+      
 branding:
   icon: 'cpu'
   color: green
