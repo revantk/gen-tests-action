@@ -22,9 +22,9 @@ runs:
         reaction: rocket
       env:
         GITHUB_TOKEN: '${{ inputs.github-token }}'
-    - name: 
-        uses: xt0rted/pull-request-comment-branch@v2
-        id: comment-branch
+    - name: Get PR branch
+      uses: xt0rted/pull-request-comment-branch@v2
+      id: comment-branch
     - name: Checkout PR Branch
       uses: actions/checkout@v3
       with:
