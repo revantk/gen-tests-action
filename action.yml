@@ -22,25 +22,21 @@ runs:
         reaction: rocket
       env:
         GITHUB_TOKEN: '${{ inputs.github-token }}'
-    - name: Github API Request
-      id: request
-      uses: octokit/request-action@v2.0.0
-      with:
-        route: ${{ github.event.issue.pull_request.url }}
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
+    - name: 
+        uses: xt0rted/pull-request-comment-branch@v2
+        id: comment-branch
     - name: Checkout PR Branch
       uses: actions/checkout@v3
       with:
         token: ${{ inputs.github-token }}
-        ref: ${{ fromJSON(steps.request.outputs.result).head.ref }}
+        ref: ${{ steps.comment-branch.outputs.head_ref }}
     - name: Fetch main branch
       shell: bash
       run: |
         git fetch origin main
         git branch
         git diff 
-        echo ${{ fromJSON(steps.request.outputs.result).head.ref }}
+        echo ${{ steps.comment-branch.outputs.head_ref }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
