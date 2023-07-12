@@ -30,7 +30,7 @@ runs:
     - name: Download gen_tests install script
       shell: bash
       run: |
-        cd ${{ github.action_path }}
+        cd ${GITHUB_ACTION_PATH}
         npm install 
         node index.js
       env:
