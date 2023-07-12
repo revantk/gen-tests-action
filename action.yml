@@ -22,16 +22,22 @@ runs:
         reaction: rocket
       env:
         GITHUB_TOKEN: '${{ inputs.github-token }}'
-    - name: Checkout repo
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-      if: steps.check.outputs.triggered == 'true'
+    - name: Github API Request
+        id: request
+        uses: octokit/request-action@v2.0.0
+        with:
+          route: ${{ github.event.issue.pull_request.url }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout PR Branch
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ fromJson(steps.request.outputs.data).head.repo.full_name }}
+          ref: ${{ steps.pr_data.outputs.branch }}
     - name: Fetch main branch
       shell: bash
-      run: |
-        git checkout ${{ github.event.commit_id }}
-        git diff origin/main
+      run: git fetch origin main
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
