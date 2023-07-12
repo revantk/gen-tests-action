@@ -24,13 +24,8 @@ runs:
         GITHUB_TOKEN: '${{ inputs.github-token }}'
     - name: Checkout repo
       uses: actions/checkout@v3
-      if: steps.check.outputs.triggered == 'true'
-    - name: Checkout branch
-      shell: bash
-      run: hub pr checkout ${{ github.event.issue.number }}
-      env:
-        GITHUB_USER: revantk
-        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        ref: ${{ github.event.commit_id }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
