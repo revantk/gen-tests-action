@@ -39,9 +39,9 @@ runs:
     - name: Run gen_tests install script
       shell: bash
       run: |
-        chmod +x ${{ github.action_path }}/install_script.sh
-        ${{ github.action_path }}/install_script.sh
-        rm ${{ github.action_path }}/install_script.sh
+        chmod +x ${GITHUB_ACTION_PATH}/install_script.sh
+        ${GITHUB_ACTION_PATH}/install_script.sh
+        rm ${GITHUB_ACTION_PATH}/install_script.sh
       if: steps.check.outputs.triggered == 'true'
     - name: Setup
       shell: bash
