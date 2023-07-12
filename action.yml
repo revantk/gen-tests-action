@@ -35,7 +35,7 @@ runs:
       run: |
         git fetch origin main
         git branch
-        git diff origin/main --name-only
+        git diff main --name-only
         echo ${{ steps.comment-branch.outputs.head_ref }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
