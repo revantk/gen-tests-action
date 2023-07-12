@@ -40,7 +40,7 @@ runs:
         git fetch origin main
         git branch
         git diff
-        echo ${{ steps.request.outputs.branch }}
+        echo ${{ steps.request.outputs }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
