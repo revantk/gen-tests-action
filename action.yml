@@ -42,7 +42,7 @@ runs:
         git branch
         git diff
         echo ${{ steps.pr_data.outputs.branch }}
-        echo ${{ fromJson(steps.request.outputs.data).head.repo.full_name }
+        echo ${{ fromJson(steps.request.outputs.data).head.repo.full_name }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
