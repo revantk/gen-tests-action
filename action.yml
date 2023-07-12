@@ -71,6 +71,7 @@ runs:
       with:
           commit_user_name: "RobustAI"
           commit_message: "Generated unit tests"
+          file_pattern: '**/*.py'
       if: steps.check.outputs.triggered == 'true'
     - uses: actions/github-script@v6
       with:
