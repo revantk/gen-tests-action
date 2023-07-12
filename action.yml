@@ -33,7 +33,7 @@ runs:
     - name: Fetch main branch
       shell: bash
       run: |
-        git fetch origin main
+        git fetch origin main:main
         git branch
         git diff main --name-only
         echo ${{ steps.comment-branch.outputs.head_ref }}
