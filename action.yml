@@ -33,7 +33,6 @@ runs:
       uses: actions/checkout@v3
       with:
         token: ${{ inputs.github-token }}
-        repository: ${{ fromJson(steps.request.outputs.data).head.repo.full_name }}
         ref: ${{ steps.pr_data.outputs.branch }}
     - name: Fetch main branch
       shell: bash
@@ -42,7 +41,6 @@ runs:
         git branch
         git diff
         echo ${{ steps.pr_data.outputs.branch }}
-        echo ${{ fromJson(steps.request.outputs.data).head.repo.full_name }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
