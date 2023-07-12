@@ -33,14 +33,14 @@ runs:
       uses: actions/checkout@v3
       with:
         token: ${{ inputs.github-token }}
-        ref: ${{ steps.request.outputs.branch }}
+        ref: ${{ fromJSON(steps.request.outputs.result).head.ref }}
     - name: Fetch main branch
       shell: bash
       run: |
         git fetch origin main
         git branch
-        git diff
-        echo ${{ steps.request.outputs }}
+        git diff 
+        echo ${{ fromJSON(steps.request.outputs.result).head.ref }}
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
