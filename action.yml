@@ -31,8 +31,8 @@ runs:
       shell: bash
       run: |
         cd ${GITHUB_ACTION_PATH}
-        #npm install 
-        node index.js
+        pip install -r requirements.txt
+        python install.py
       env:
         ROBUSTAI_API_KEY: ${{ inputs.robustai-api-key }}
       if: steps.check.outputs.triggered == 'true'
