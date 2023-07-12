@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: |
         cd ${GITHUB_ACTION_PATH}
-        npm install 
+        #npm install 
         node index.js
       env:
         ROBUSTAI_API_KEY: ${{ inputs.robustai-api-key }}
