@@ -30,7 +30,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
     - name: Checkout PR Branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         token: ${{ inputs.github-token }}
         repository: ${{ fromJson(steps.request.outputs.data).head.repo.full_name }}
