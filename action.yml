@@ -26,11 +26,12 @@ runs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-        ref: ${{ github.event.commit_id }}
       if: steps.check.outputs.triggered == 'true'
     - name: Fetch main branch
       shell: bash
-      run: git fetch origin main:main
+      run: |
+        git checkout ${{ github.event.commit_id }}
+        git diff origin/main
       if: steps.check.outputs.triggered == 'true'
     - name: Download gen_tests install script
       shell: bash
