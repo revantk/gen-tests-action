@@ -61,7 +61,7 @@ jobs:
 Replace `<docker-image>` with the URL for your docker image.
 Also ensure that the `DOCKER_REGISTRY_USERNAME` and `DOCKER_REGISTRY_TOKEN` secrets are set in your repository settings. These can be credentials for Dockerhub, AWS Elastic Container Registry, Github container registry etc.
 If you are a using a public image, you can omit the credentials section.
-Note that your Docker image must have python and pip installed.
+Note that your Docker image must have python, pip and git installed.
 
 
 ## Usage
