@@ -61,7 +61,7 @@ runs:
       if: steps.check.outputs.triggered == 'true'
     - name: PWD
       shell: bash
-      run: pwd
+      run: pwd && ls
     - name: Run gen_tests
       id: run_gen_tests
       uses: 'selfagency/capture-output@v1'
