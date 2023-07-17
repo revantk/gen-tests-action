@@ -59,6 +59,9 @@ runs:
         pip3 install ~/bin/robust_ai_utils.tar.gz
         echo "ROBUSTAI_API_KEY=${{ inputs.robustai-api-key }}" >> $GITHUB_ENV
       if: steps.check.outputs.triggered == 'true'
+    - name: PWD
+      shell: bash
+      run: pwd
     - name: Run gen_tests
       id: run_gen_tests
       uses: 'selfagency/capture-output@v1'
