@@ -67,3 +67,27 @@ Note that your Docker image must have python, pip and git installed.
 ## Usage
 
 On a pull request, make a comment with `/gen_tests` in the comment body. This will trigger a test generation action run. The action will look for functions that have changed between the PR branch and `main` and generate tests for those. Once tests are generated, the action will make a commit to your branch with the created / updated test files.
+
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      if: steps.check.outputs.triggered == 'true'
+    - name: Checkout branch
+      run: |
+        if [ "${{ github.even_name }}" == "pull_request" ]; then
+            PR_NUMBER="${{ github.event.number }}"
+        else
+            PR_NUMBER="${{ github.event.issue.number }}"
+        fi
+        echo $PR_NUMBER
+        hub pr checkout $PR_NUMBER
+      env:
+        GITHUB_USER: ${{ github.repository_owner }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: steps.check.outputs.triggered == 'true
+    - name: Start services
+      run: >
+        echo "${{ secrets.ENV_FILE }}" > .env &&
+        docker-compose up -d api
+      if: steps.check.outputs.triggered == 'true'
+
