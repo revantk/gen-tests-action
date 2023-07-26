@@ -71,7 +71,7 @@ runs:
           git config --global --add safe.directory /app && git branch &&
           find . -name "requirement*" -type f -exec pip3 install -q -r '{}' ';' &&
           echo "${{ inputs.env-file-contents }}" > .env &&
-          gen_tests --mode=4 --run_debugging=False --benchmark=${{ steps.check_benchmark.outputs.triggered }} > gen_tests_output.txt
+          gen_tests --mode=4 --benchmark=${{ steps.check_benchmark.outputs.triggered }} > gen_tests_output.txt
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Commit tests
       uses: stefanzweifel/git-auto-commit-action@v4
