@@ -11,6 +11,10 @@ inputs:
      required: false
      default: './'
      description: "Path to the checked out repo to generate tests for"
+   docker-run-args:
+     required: false
+     default: ""
+     description: "Additional args to pass to docker run when running the gen_tests container"
 runs:
   using: "composite"
   steps:
@@ -21,75 +25,63 @@ runs:
         trigger: "/gen_tests"
         reaction: rocket
       env:
-        GITHUB_TOKEN: '${{ inputs.github-token }}'
-    - name: Get PR branch
-      uses: xt0rted/pull-request-comment-branch@v2
-      id: comment-branch
-    - name: Checkout PR Branch
-      uses: actions/checkout@v3
-      with:
-        token: ${{ inputs.github-token }}
-        ref: ${{ steps.comment-branch.outputs.head_ref }}
-    - name: Fetch main branch
-      shell: bash
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout branch
       run: |
-        git fetch origin main:main
-      if: steps.check.outputs.triggered == 'true'
-    - name: Download gen_tests install script
-      shell: bash
-      run: |
-        cd ${GITHUB_ACTION_PATH}
-        pip install -r requirements.txt
-        python install.py
+        if [ "${{ github.even_name }}" == "pull_request" ]; then
+            PR_NUMBER="${{ github.event.number }}"
+        else
+            PR_NUMBER="${{ github.event.issue.number }}"
+        fi
+        echo $PR_NUMBER
+        hub pr checkout $PR_NUMBER
       env:
-        ROBUSTAI_API_KEY: ${{ inputs.robustai-api-key }}
+        GITHUB_USER: ${{ github.repository_owner }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       if: steps.check.outputs.triggered == 'true'
-    - name: Run gen_tests install script
-      shell: bash
-      run: |
-        chmod +x ${GITHUB_ACTION_PATH}/install_script.sh
-        ${GITHUB_ACTION_PATH}/install_script.sh
-        rm ${GITHUB_ACTION_PATH}/install_script.sh
-      if: steps.check.outputs.triggered == 'true'
-    - name: Setup
-      shell: bash
-      run: |
-        pip3 install --upgrade pip
-        pip3 install --upgrade setuptools
-        pip3 install ~/bin/robust_ai_utils.tar.gz
-        echo "ROBUSTAI_API_KEY=${{ inputs.robustai-api-key }}" >> $GITHUB_ENV
-      if: steps.check.outputs.triggered == 'true'
-    - name: PWD
-      shell: bash
-      run: pwd && ls
-    - name: Run gen_tests
-      id: run_gen_tests
-      uses: 'selfagency/capture-output@v1'
+    - name: Comment link to action
+      uses: mshick/add-pr-comment@v2
       with:
-        cmd: gen_tests
-        args: --repo_path=${{ inputs.repo-path }},--mode=4,--run_debugging=False
+        message-id: ${{ github.run_id }}
+        message: "⏳ Running test generation ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
       if: steps.check.outputs.triggered == 'true'
-    - uses: stefanzweifel/git-auto-commit-action@v4
-      name: Commit tests
+    - name: Run Gen Tests
+      uses: addnab/docker-run-action@v3
+      with:
+        registry: gcr.io
+        image: revant/gen_tests:latest
+        options: > 
+          -v ${{ github.workspace }}:/app 
+          -e ROBUSTAI_API_KEY=${{ inputs.robustai-api-key }}
+          ${{ inputs.docker-run-args }}
+        run: |
+          cd ${{ inputs.repo-path }} &&
+          git config --global --add safe.directory /app && git branch &&
+    - name: Commit tests
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
           commit_user_name: "RobustAI"
           commit_message: "Generated unit tests"
-          file_pattern: '**/*.py'
+          file_pattern: '*.py'
       if: steps.check.outputs.triggered == 'true'
-    - uses: actions/github-script@v6
+    - name: Add output PR comment
+      id: gen_tests_output
+      run: |
+        echo "GEN_TESTS_OUTPUT<<EOF" >> "$GITHUB_ENV" &&
+        cat ${{ inputs.repo-path }}/gen_tests_output.txt >> "$GITHUB_ENV" &&
+        echo "EOF" >> "$GITHUB_ENV"
+      if: steps.check.outputs.triggered == 'true'
+    - name: Update comment with status
+      uses: mshick/add-pr-comment@v2
       with:
-        script: |
-          const OUTPUT_COMMENT = process.env.OUTPUT_COMMENT
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: OUTPUT_COMMENT
-          })
-      env:
-        OUTPUT_COMMENT: ${{ steps.run_gen_tests.outputs.output }}
-      if: steps.check.outputs.triggered == 'true'
-      
+        message-id: ${{ github.run_id }}
+        update-only: true
+        message: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+        message-success: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+        message-failure: "❌ Test generation failed ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+        message-cancelled: "❌ Test generation cancelled ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+      if: always()
+    
 branding:
   icon: 'cpu'
   color: green

@@ -31,12 +31,14 @@ jobs:
     name: Generate Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Unit Test Generator
-        uses: revantk/gen-tests-action@0.1
-        with:
-          robustai-api-key: ${{ secrets.ROBUSTAI_API_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-```
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Unit Test Generator
+      uses: revantk/gen-tests-action@main
+      with:
+        robustai-api-key: ${{ secrets.ROBUSTAI_API_KEY }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+``` 
 Add a Github Actions secret named `ROBUSTAI_API_KEY` to your repository settings with your API key. Note that `secrets.GITHUB_TOKEN` is automatically supplied by Github Actions and doesn't require manual setup.
 
 - Make sure Github Actions has read and write permissions on your repository. This allows the action to add comments to pull requests and commit generated tests to your branch.
@@ -44,26 +46,34 @@ Add a Github Actions secret named `ROBUSTAI_API_KEY` to your repository settings
 Settings -> Action -> General -> Workflow permissions > Read and Write permissions
 ```
 
-- If you are using Docker images as part of your CI/CD workflow, you can run test generation in a Docker image with the requisite dependencies for your project. Add a `container` section under the job in your worflow YAML file.
+- If you are using Docker compose as part of your CI/CD workflow, you can start any required services before the `Unit Test Generator` step like this:
 ```
 jobs:
   gen-tests:
-    ...
-    container:
-      image: <docker-image>
-      options: --user root  # workaround for Github actions Node.js installation
-      credentials:
-        username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
-        password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
     steps:
       ...
+    - name: Start services
+      run: >
+        docker-compose up -d myservice
+    - name: Unit Test Generator
+      ...
 ```
-Replace `<docker-image>` with the URL for your docker image.
-Also ensure that the `DOCKER_REGISTRY_USERNAME` and `DOCKER_REGISTRY_TOKEN` secrets are set in your repository settings. These can be credentials for Dockerhub, AWS Elastic Container Registry, Github container registry etc.
-If you are a using a public image, you can omit the credentials section.
-Note that your Docker image must have python, pip and git installed.
+
+- If unit tests depend on services started in the command above, you can pass in the `--network` argument as part of the `docker-run-args` input to the action. These args will be passed into the `docker run` command when starting the container in which unit test generation + execution happens.
+```
+jobs:
+  gen-tests:
+    steps:
+      ...
+    - name: Unit Test Generator
+      uses: revantk/gen-tests-action@main
+      with:
+        robustai-api-key: ${{ secrets.ROBUSTAI_API_KEY }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        docker-run-args: "--network container:myservice"
+```
 
 
 ## Usage
 
-On a pull request, make a comment with `/gen_tests` in the comment body. This will trigger a test generation action run. The action will look for functions that have changed between the PR branch and `main` and generate tests for those. Once tests are generated, the action will make a commit to your branch with the created / updated test files.
+On a pull request, make a comment with `/gen_tests` in the comment body. This will trigger a test generation action run. The action will look for functions that have changed between the PR branch and `main` and generate tests for those. Once tests are generated, the action will make a commit to your branch with the created / updated test files. The action will also add comments to the PR indicating the status of the run, as well as outputs from the test generation run.
