@@ -15,6 +15,10 @@ inputs:
      required: false
      default: ""
      description: "Additional args to pass to docker run when running the gen_tests container"
+   env-file-contents:
+     required: false
+     default: ""
+     description: "Content of env file to be used when running generated tests"
 runs:
   using: "composite"
   steps:
@@ -62,12 +66,12 @@ runs:
           -v ${{ github.workspace }}:/app 
           -e ROBUSTAI_API_KEY=${{ inputs.robustai-api-key }}
           ${{ inputs.docker-run-args }}
-      run: |
-        cd ${{ inputs.repo-path }} &&
-        find . -name "requirement*" -type f -exec pip3 install -q -r '{}' ';' &&
-        echo "${{ secrets.ENV_FILE }}" > .env &&
-        git config --global --add safe.directory /app && git branch && 
-        gen_tests --mode=4 --run_debugging=False --benchmark=${{ steps.check_benchmark.outputs.triggered }} > ${{ inputs.repo-path }}/gen_tests_output.txt
+        run: |
+          cd ${{ inputs.repo-path }} &&
+          git config --global --add safe.directory /app && git branch &&
+          find . -name "requirement*" -type f -exec pip3 install -q -r '{}' ';' &&
+          echo "${{ inputs.env-file-contents }}" > .env &&
+          gen_tests --mode=4 --run_debugging=False --benchmark=${{ steps.check_benchmark.outputs.triggered }} > gen_tests_output.txt
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Commit tests
       uses: stefanzweifel/git-auto-commit-action@v4
