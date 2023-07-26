@@ -9,7 +9,7 @@ inputs:
      description: "Github Actions token"
    repo-path:
      required: false
-     default: './'
+     default: '.'
      description: "Path to the checked out repo to generate tests for"
    docker-run-args:
      required: false
