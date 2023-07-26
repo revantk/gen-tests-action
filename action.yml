@@ -30,6 +30,7 @@ runs:
         reaction: rocket
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
     - name: Check PR comment for benchmark trigger
       uses: khan/pull-request-comment-trigger@v1.1.0
       id: check_benchmark
@@ -38,6 +39,7 @@ runs:
         reaction: rocket
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
     - name: Checkout branch
       run: |
         if [ "${{ github.even_name }}" == "pull_request" ]; then
@@ -50,12 +52,14 @@ runs:
       env:
         GITHUB_USER: ${{ github.repository_owner }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Comment link to action
       uses: mshick/add-pr-comment@v2
       with:
         message-id: ${{ github.run_id }}
         message: "⏳ Running test generation ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+      shell: bash
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Run Gen Tests
       uses: addnab/docker-run-action@v3
@@ -72,6 +76,7 @@ runs:
           find . -name "requirement*" -type f -exec pip3 install -q -r '{}' ';' &&
           echo "${{ inputs.env-file-contents }}" > .env &&
           gen_tests --mode=4 --run_debugging=False --benchmark=${{ steps.check_benchmark.outputs.triggered }} > gen_tests_output.txt
+      shell: bash
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Commit tests
       uses: stefanzweifel/git-auto-commit-action@v4
@@ -79,6 +84,7 @@ runs:
           commit_user_name: "RobustAI"
           commit_message: "Generated unit tests"
           file_pattern: '*.py'
+      shell: bash
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Add output PR comment
       id: gen_tests_output
@@ -86,6 +92,7 @@ runs:
         echo "GEN_TESTS_OUTPUT<<EOF" >> "$GITHUB_ENV" &&
         cat ${{ inputs.repo-path }}/gen_tests_output.txt >> "$GITHUB_ENV" &&
         echo "EOF" >> "$GITHUB_ENV"
+      shell: bash
       if: steps.check.outputs.triggered == 'true' || steps.check_benchmark.outputs.triggered == 'true'
     - name: Update comment with status
       uses: mshick/add-pr-comment@v2
@@ -96,6 +103,7 @@ runs:
         message-success: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
         message-failure: "❌ Test generation failed ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
         message-cancelled: "❌ Test generation cancelled ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+      shell: bash
       if: always()
     
 branding:
