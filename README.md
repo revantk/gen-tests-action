@@ -33,18 +33,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Checkout branch
-      run: |
-        if [ "${{ github.even_name }}" == "pull_request" ]; then
-            PR_NUMBER="${{ github.event.number }}"
-        else
-            PR_NUMBER="${{ github.event.issue.number }}"
-        fi
-        echo $PR_NUMBER
-        hub pr checkout $PR_NUMBER
-      env:
-        GITHUB_USER: ${{ github.repository_owner }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Unit Test Generator
       uses: revantk/gen-tests-action@main
       with:
