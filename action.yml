@@ -94,10 +94,10 @@ runs:
       with:
         message-id: ${{ github.run_id }}
         update-only: true
-        message: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
-        message-success: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
-        message-failure: "❌ Test generation failed ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
-        message-cancelled: "❌ Test generation cancelled ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"
+        message: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))\n${{ env.GEN_TESTS_OUTPUT }}"
+        message-success: "✅ Test generation succeeded ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))\n${{ env.GEN_TESTS_OUTPUT }}"
+        message-failure: "❌ Test generation failed ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))\n${{ env.GEN_TESTS_OUTPUT }}"
+        message-cancelled: "❌ Test generation cancelled ([link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))\n${{ env.GEN_TESTS_OUTPUT }}"
       if: always()
     
 branding:
