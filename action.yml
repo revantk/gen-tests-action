@@ -69,7 +69,7 @@ runs:
           ${{ inputs.docker-run-args }}
         run: |
           cd ${{ inputs.repo-path }} &&
-          git config --global --add safe.directory /app && git branch && git diff main &&
+          git config --global --add safe.directory /app && git branch && git diff main... --relative -U0 &&
           find . -name "requirement*" -type f -exec pip3 install -q -r '{}' ';' &&
           echo "${{ inputs.env-file-contents }}" > .env &&
           gen_tests --mode=4 --benchmark=${{ steps.check_benchmark.outputs.triggered }} > gen_tests_output.txt
